@@ -32,7 +32,7 @@ app.post('/api/users', async (req, res) => {
       data: {
         name,
         email,
-        password, // Note: In a real application, you should hash the password
+        password,
       },
     });
     res.status(201).json(user);
@@ -46,4 +46,4 @@ const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-}); 
+});
