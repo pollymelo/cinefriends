@@ -1,23 +1,26 @@
 import React from 'react';
+import Buttons from '../Components/Buttons';
+import './Home.css';
+import theaterImage from '../assets/theater3.jpg';
+import './Imagem.css';
 
-const Button = () => {
-  // function handleClick() {}
-
+const Imagem = () => {
   return (
     <div>
-      <button id="b-login">Login</button>
-      <button id="b-cad">Cadastro</button>
+      <img className="imagem" src={theaterImage} alt="Theater" />
     </div>
   );
 };
 
-const Image = () => {};
-
 const Home = () => {
   return (
-    <div>
-      <Button />
-    </div>
+    <>
+      <Buttons />
+      <Imagem />
+      <div className="rights-container">
+        <h2>Direitos Reservados © Copyright</h2>
+      </div>
+    </>
   );
 };
 

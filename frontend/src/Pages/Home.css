@@ -1,0 +1,15 @@
+.rights-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.rights-container h2 {
+  font-family: Tahoma;
+  color: aliceblue;
+  margin: 0;
+  font-size: 0.8rem;
+}

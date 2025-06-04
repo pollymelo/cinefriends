@@ -1,0 +1,6 @@
+.imagem {
+  background-size: cover;
+  display: block;
+  background-attachment: fixed;
+  background-origin: padding-box;
+}
