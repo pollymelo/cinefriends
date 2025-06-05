@@ -2,7 +2,6 @@ import React from 'react';
 import Buttons from '../Components/Buttons';
 import './Home.css';
 import theaterImage from '../assets/theater3.jpg';
-import './Imagem.css';
 
 const Imagem = () => {
   return (
