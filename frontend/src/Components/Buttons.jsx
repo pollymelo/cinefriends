@@ -5,23 +5,11 @@ import './Buttons.css';
 const Buttons = () => {
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    navigate('/login');
-  };
-
-  const handleCadastro = () => {
-    navigate('/register');
-  };
-
   return (
     <div className="buttons-container">
-      <button type="button" className="home" onClick={handleLogin}>
-        Login
-      </button>
+      <button className="home" onClick={() => navigate('/login')}>Login</button>
       <span className="separator">|</span>
-      <button type="button" className="home" onClick={handleCadastro}>
-        Cadastro
-      </button>
+      <button className="home" onClick={() => navigate('/register')}>Cadastro</button>
     </div>
   );
 };

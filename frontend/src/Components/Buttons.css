@@ -1,7 +1,57 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  background: #360B0D;
+  min-height: 100vh;
+  font-family: Verdana, Arial, sans-serif;
+}
+
+.header-container {
+  width: 100vw;
+  background: #fff;
+  margin: 0 auto;
+  margin-top: 40px;
+  border-radius: 0 0 1.5vw 1.5vw;
+  box-shadow: 0 0 0 10px #360B0D, 0 0 0 20px #000;
+  text-align: center;
+  padding: 30px 0 10px 0;
+}
+
+.logo {
+  color: #A40000;
+  font-size: 5vw;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+.slogan {
+  color: #A40000;
+  font-size: 1.5vw;
+  margin-top: 0.5vw;
+  margin-bottom: 0;
+}
+
+.bar {
+  width: 100vw;
+  background: #360B0D;
+  color: #fff;
+  font-size: 1.5vw;
+  text-align: center;
+  padding: 0.5vw 0;
+  margin: 0;
+  font-family: Verdana, Arial, sans-serif;
+}
+
 .buttons-container {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  padding: 20px 30px 0 0;
+  gap: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .home {
@@ -11,20 +61,46 @@
   border-radius: 6px;
   padding: 5px 15px;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 18px;
   border: none;
-  margin-top: 0.1%;
+  margin-left: 0;
+  margin-right: 0;
   text-align: center;
   cursor: pointer;
+  box-shadow: 1px 1px 2px #0002;
 }
 
 .separator {
-  color: #fff;
-  font-size: 20px;
-  margin: 10px;
+  color: #ffffff;
+  font-size: 22px;
+  margin: 0 5px;
 }
 
 .home:hover {
-  background-color: #800000;
+  background-color: #A40000;
   color: white;
+}
+
+.rights-container {
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  text-align: center;
+  padding: 15px 0;
+  background-color: #360B0D;
+  color: #fff;
+  font-size: 1.1rem;
+  font-family: Verdana, Arial, sans-serif;
+  z-index: 10;
+  letter-spacing: 1px;
+}
+
+.cinema-bg {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -1;
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import Buttons from '../Components/Buttons';
 import './Home.css';
 import theaterImage from '../assets/theater3.jpg';
+import CopyR from '../Components/CopyR';
 
 const Imagem = () => {
   return (
@@ -16,9 +17,7 @@ const Home = () => {
     <>
       <Buttons />
       <Imagem />
-      <div className="rights-container">
-        <h2>Direitos Reservados © Copyright</h2>
-      </div>
+      <CopyR />
     </>
   );
 };
