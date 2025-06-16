@@ -17,7 +17,7 @@ const Home = () => {
     <>
       <Buttons />
       <Imagem />
-      <CopyR />
+      <CopyR className="copyr" />
     </>
   );
 };

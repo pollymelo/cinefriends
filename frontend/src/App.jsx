@@ -5,12 +5,7 @@ import Login from './Pages/Login';
 import Buttons from './Components/Buttons';
 
 const App = () => {
-  return (
-    <>
-      <Home />;
-      <Login />
-    </>
-  );
+  return <Home />;
 };
 
 export default App;
