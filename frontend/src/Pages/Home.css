@@ -8,7 +8,35 @@
   object-fit: cover;
 }
 
-div{
+
+.buttons-container {
+  display: block;
+  justify-content: flex-end;
+  align-items: center;
+  padding:9px 25px;
+  gap: 0;
+  position: fixed;
+  top: 0;
+  right: 0;
   z-index: 1;
 }
 
+.home {
+  font-family: Verdana;
+  background-color: #fff;
+  color: #360B0D;
+  border-radius: 6px;
+  padding: 5px 10px;
+  text-decoration: none;
+  font-size: 16px;
+  border: none;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 1px 1px 2px #0002;
+}
+
+.separator {
+  color: #ffffff;
+  font-size: 22px;
+  margin: 0 5px;
+}

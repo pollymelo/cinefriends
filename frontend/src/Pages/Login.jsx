@@ -1,26 +1,41 @@
 import React from 'react';
 import './Login.css';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="login-container">
-      <h2>Login</h2>
-      <form>
-        <input
-          type="email"
-          placeholder="Digite seu e-mail"
-          className="login-input"
-        />
-        <input
-          type="password"
-          placeholder="Digite sua senha"
-          className="login-input"
-        />
-        <button type="submit" className="btn-entrar">
-          Entrar
-        </button>
-      </form>
-    </div>
+    <>
+      <div className="login-header">CineFriends</div>
+      <div className="login-main">
+        <form className="login-box">
+          <h2>Login</h2>
+          <label htmlFor="usuario">Usuário:</label>
+          <input id="usuario" type="text" placeholder="Digite o usuário..." />
+          <label htmlFor="senha">Senha:</label>
+          <input id="senha" type="password" placeholder="Digite a senha..." />
+          <button
+            type="submit"
+            className="profile"
+            onClick={() => navigate('/profile')}
+          >
+            Acessar
+          </button>
+          <div className="login-links">
+            <a href="#">Esqueceu a senha?</a>
+            <a
+              href="#"
+              className="register"
+              onClick={() => navigate('/Register')}
+            >
+              Fazer Cadastro
+            </a>
+          </div>
+        </form>
+      </div>
+      <div className="login-footer">Direitos Reservados © Copyright</div>
+    </>
   );
 };
 

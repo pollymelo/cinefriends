@@ -1,0 +1,132 @@
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #360B0D;
+  font-family: 'Josefin Sans', Arial, sans-serif;
+}
+
+.login-header {
+  width: 100vw;
+  background: #fff;
+  color: #a40000;
+  font-size: 3rem;
+  font-family: 'Josefin Sans', Arial, sans-serif;
+  text-align: center;
+  padding: 10px 0 0 0;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.login-main {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 40px 40px 20px 40px;
+  box-shadow: 0 0 10px #0002;
+  min-width: 350px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.login-box h2 {
+  text-align: center;
+  font-size: 2rem;
+  font-family: 'Josefin Sans', Arial, sans-serif;
+  margin-bottom: 10px;
+}
+
+.login-box label {
+  font-size: 1.3rem;
+  color: #360B0D;
+  margin-bottom: 2px;
+  font-family: 'Josefin Sans', Arial, sans-serif;
+}
+
+.login-box input {
+  background: #360B0D;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 1.1rem;
+  font-family: 'Josefin Sans', Arial, sans-serif;
+  margin-bottom: 10px;
+}
+
+.login-box button {
+  background: #360B0D;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 24px;
+  font-size: 1.1rem;
+  font-family: 'Josefin Sans', Arial, sans-serif;
+  cursor: pointer;
+  align-self: flex-end;
+  margin-top: 5px;
+  transition: background 0.2s;
+}
+
+.page-header-buttons-wrapper {
+  position: absolute; 
+    top: 0;
+    right: 0;
+    z-index: 10;
+    padding: 10px 20px; 
+}
+
+.rights-container {
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  text-align: center;
+  background: #360B0D;
+  color: #fff;
+  font-size: 1.1rem;
+  padding: 10px 0;
+  z-index: 1; 
+  font-family: 'Josefin Sans', Arial, sans-serif;
+}
+
+.login-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15px;
+  gap: 2px;
+}
+
+.login-links a {
+  color: #360B0D;
+  text-decoration: none;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.login-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  text-align: center;
+  background: #fff;
+  color: #360B0D;
+  font-size: 1.1rem;
+  font-family: 'Josefin Sans', Arial, sans-serif;
+  padding: 5px 0;
+  letter-spacing: 1px;
+}
+
+.login-container{
+  margin-left: 20px;
+  color: black;
+}
+

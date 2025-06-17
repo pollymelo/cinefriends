@@ -2,10 +2,12 @@ import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './Pages/Home';
 import Login from './Pages/Login';
-import Buttons from './Components/Buttons';
+import Register from './Pages/Register';
+import Profile from './Pages/Profile';
+import Atualiza from './Pages/Atualiza';
 
 const App = () => {
-  return <Home />;
+  return <Profile />;
 };
 
 export default App;
