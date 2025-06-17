@@ -1,137 +1,175 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Register.css';
 import cinemaImg from '../assets/cinema_svg.png';
-import { useNavigate } from 'react-router-dom';
 
-const Register = () => {
+// eslint-disable-next-line no-unused-vars
+const generos = ['', 'Masculino', 'Feminino', 'Não Binário'];
+
+function Register({ setUsuario }) {
+  const [form, setForm] = useState({
+    nome: '',
+    genero: '',
+    data_nascimento: '',
+    email: '',
+    telefone: '',
+    usuario: '',
+    senha: '',
+    confirmaSenha: '',
+  });
+  const [error, setError] = useState('');
   const navigate = useNavigate();
-  const [senha, setSenha] = useState('');
-  const [email, setEmail] = useState('');
-  const [telefone, setTelefone] = useState('');
-  const [confirmaSenha, setConfirmaSenha] = useState('');
-  const [erroSenha, setErroSenha] = useState('');
-  const [erroConfirma, setErroConfirma] = useState('');
-  const [genero, setGenero] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    let valid = true;
-
-    if (senha.length < 6) {
-      setErroSenha('A senha deve ter pelo menos 6 caracteres.');
-      valid = false;
-    } else {
-      setErroSenha('');
+    setError('');
+    if (form.senha !== form.confirmaSenha) {
+      setError('As senhas não coincidem.');
+      return;
     }
-
-    if (senha !== confirmaSenha) {
-      setErroConfirma('As senhas não coincidem.');
-      valid = false;
-    } else {
-      setErroConfirma('');
-    }
-
-    if (valid) {
-      alert('Cadastro realizado com sucesso!');
+    try {
+      const payload = {
+        nome: form.nome,
+        genero: form.genero,
+        data_nascimento: form.data_nascimento.split('/').reverse().join('-'),
+        email: form.email,
+        telefone: form.telefone.replace(/\D/g, ''),
+        usuario: form.usuario,
+        senha: form.senha,
+      };
+      const response = await axios.post(
+        'http://localhost:3001/api/usuarios',
+        payload,
+      );
+      setUsuario(response.data);
+      localStorage.setItem('usuario', JSON.stringify(response.data));
+      navigate('/profile');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Erro ao cadastrar.');
     }
   };
+
   return (
     <div className="register-bg">
-      <div className="register-container">
-        {/* Coluna Esquerda */}
+      <div className="register-main">
+        {/* Lado esquerdo */}
         <div className="register-left">
-          <div className="register-title-box">
-            <h1>Cadastro</h1>
+          <div className="register-logo">CineFriends</div>
+          <div className="register-slogan">
+            Encontre sua próxima companhia de cinema.
           </div>
-          <div className="register-logo">
-            <span className="logo-main">CineFriends</span>
-            <span className="logo-slogan">
-              Encontre sua próxima companhia de cinema.
-            </span>
+          <div className="register-img-circle">
+            <img src={cinemaImg} alt="Cinema" />
           </div>
-          <img
-            src={cinemaImg}
-            alt="Cinema"
-            className="\assets\cinema_svg.png"
-          />
         </div>
-        {/* Coluna Direita */}
-        <form className="register-form" onSubmit={handleSubmit}>
-          <label>
-            Nome completo:
-            <input type="text" placeholder="Digite seu nome..." required />
-          </label>
-          <label>
-            Gênero:
-            <select
-              id="genero"
-              value={genero} // <--- Vincule o valor do select ao estado 'genero'
-              onChange={(e) => setGenero(e.target.value)}
-            >
-              <option value="selecionar">Selecione seu gênero</option>
-              <option value="masculino">Masculino</option>
-              <option value="feminino">Feminino</option>
-              <option value="nbinario">Não Binário</option>
-            </select>
-          </label>
-          <label>
-            Data de Nascimento:
-            <input
-              type="date"
-              className="date"
-              placeholder="dd/mm/aaaa"
-              required
-            />
-          </label>
-          <label>
-            E-mail:
-            <input
-              type="email"
-              placeholder="Digite seu e-mail..."
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </label>
-          <label>
-            Telefone:
-            <input
-              type="text"
-              placeholder="(xx) xxxxx-xxxx"
-              value={telefone}
-              onChange={(e) => setTelefone(e.target.value)}
-            />
-          </label>
-          <label>
-            Usuário:
-            <input type="text" placeholder="Digite o usuário..." required />
-          </label>
-          <label>
-            Senha:
-            <input
-              type="password"
-              placeholder="Digite sua senha..."
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
-            {erroSenha && <span className="erro">{erroSenha}</span>}
-          </label>
-          <label>
-            Confirme a senha:
-            <input
-              type="password"
-              placeholder="Confirme sua senha..."
-              value={confirmaSenha}
-              onChange={(e) => setConfirmaSenha(e.target.value)}
-            />
-            {erroConfirma && <span className="erro">{erroConfirma}</span>}
-          </label>
-          <button type="submit" onClick={() => navigate('/login')}>
+        {/* Lado direito */}
+        <form className="register-card" onSubmit={handleSubmit}>
+          <div className="register-title">Cadastro</div>
+          <div className="register-fields">
+            <label>
+              Nome completo:
+              <input
+                type="text"
+                name="nome"
+                placeholder="Digite seu nome..."
+                value={form.nome}
+                onChange={handleChange}
+                required
+              />
+            </label>
+            <label>
+              Gênero:
+              <select
+                name="genero"
+                value={form.genero}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Selecione seu gênero...</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Não Binário">Não Binário</option>
+              </select>
+            </label>
+            <label>
+              Data de Nascimento:
+              <input
+                type="date"
+                className="date"
+                placeholder="dd/mm/aaaa"
+                required
+              />
+            </label>
+            <label>
+              E-mail:
+              <input
+                type="email"
+                name="email"
+                placeholder="Digite seu e-mail..."
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
+            </label>
+            <label>
+              Telefone:
+              <input
+                type="tel"
+                name="telefone"
+                placeholder="(xx) xxxxx-xxxx"
+                value={form.telefone}
+                onChange={handleChange}
+                pattern="\(\d{2}\) \d{5}-\d{4}"
+                required
+              />
+            </label>
+            <label>
+              Usuário:
+              <input
+                type="text"
+                name="usuario"
+                placeholder="Digite o usuário..."
+                value={form.usuario}
+                onChange={handleChange}
+                required
+              />
+            </label>
+            <label>
+              Senha:
+              <input
+                type="password"
+                name="senha"
+                placeholder="Digite sua senha..."
+                value={form.senha}
+                onChange={handleChange}
+                required
+              />
+            </label>
+            <label>
+              Confirme a senha:
+              <input
+                type="password"
+                name="confirmaSenha"
+                placeholder="Confirme sua senha..."
+                value={form.confirmaSenha}
+                onChange={handleChange}
+                required
+              />
+            </label>
+          </div>
+          {error && <div className="register-error">{error}</div>}
+          <button className="register-btn" type="submit">
             Cadastrar
           </button>
         </form>
       </div>
     </div>
   );
-};
+}
 
 export default Register;

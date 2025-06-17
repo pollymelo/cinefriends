@@ -12,4 +12,3 @@ CREATE TABLE usuario (
     usuario varchar(25) not null,
     senha varchar(255) not null
 )
-

@@ -18,6 +18,7 @@ const Home = () => {
           Cadastro
         </button>
       </div>
+      <CopyR />
     </div>
   );
 };

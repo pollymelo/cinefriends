@@ -1,13 +1,30 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Profile.css';
 
-const Profile = () => {
+function Profile({ usuario, setUsuario }) {
   const navigate = useNavigate();
 
-  const handleDeleteAccount = () => {
-    alert('Sua conta foi deletada.');
-    navigate('/login');
+  if (!usuario) return null;
+
+  // Função para deletar conta
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:3001/api/usuarios/${usuario.id}`);
+      setUsuario(null);
+      localStorage.removeItem('usuario');
+      navigate('/');
+      // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      alert('Erro ao deletar conta.');
+    }
+  };
+
+  // Função para desconectar
+  const handleLogout = () => {
+    setUsuario(null);
+    localStorage.removeItem('usuario');
+    navigate('/');
   };
 
   return (
@@ -64,19 +81,16 @@ const Profile = () => {
           >
             Atualizar dados
           </button>
-          <button className="profile-action-btn " onClick={handleDeleteAccount}>
+          <button className="profile-action-btn " onClick={handleDelete}>
             Deletar conta
           </button>
-          <button
-            className="profile-action-btn"
-            onClick={() => navigate('/Login')}
-          >
+          <button className="profile-action-btn" onClick={handleLogout}>
             Desconectar
           </button>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default Profile;

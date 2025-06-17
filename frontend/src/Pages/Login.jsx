@@ -1,9 +1,38 @@
-import React from 'react';
-import './Login.css';
+/* eslint-disable no-unused-vars */
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import './Login.css';
 
-const Login = () => {
+function Login({ setUser }) {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        'http://localhost:5173/api/users/login',
+        formData,
+      );
+      setUser(response.data);
+      localStorage.setItem('user', JSON.stringify(response.data));
+      navigate('/profile');
+    } catch (error) {
+      setError('Invalid email or password');
+    }
+  };
 
   return (
     <>
@@ -37,6 +66,6 @@ const Login = () => {
       <div className="login-footer">Direitos Reservados © Copyright</div>
     </>
   );
-};
+}
 
 export default Login;
