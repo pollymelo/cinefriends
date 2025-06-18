@@ -42,11 +42,5 @@
 
 ---
 
-## 🚀 Como rodar o projeto localmente
 
-### ⚙️ Pré-requisitos
-
-- Node.js
-- MySQL
-- Git
 
