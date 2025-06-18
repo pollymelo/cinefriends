@@ -7,19 +7,18 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Usuario {
-  id              Int      @id @default(autoincrement())
-  nome            String
-  genero          Genero?
-  data_nascimento DateTime
-  email           String   @unique
-  telefone        String
-  usuario         String   @unique
-  senha           String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+model User {
+  id            Int      @id @default(autoincrement())
+  nome          String
+  username      String   @unique
+  email         String   @unique
+  password      String
+  telefone      String?
+  genero        String
+  datanascimento DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
-
 enum Genero {
   Masculino
   Feminino

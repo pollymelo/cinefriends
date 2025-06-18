@@ -4,20 +4,20 @@ import axios from 'axios';
 import './Register.css';
 import cinemaImg from '../assets/cinema_svg.png';
 
-// eslint-disable-next-line no-unused-vars
-const generos = ['', 'Masculino', 'Feminino', 'Não Binário'];
+const genero = ['Masculino', 'Feminino', 'Não Binário'];
 
 function Register({ setUsuario }) {
   const [form, setForm] = useState({
     nome: '',
+    usuario: '',
     genero: '',
     data_nascimento: '',
     email: '',
     telefone: '',
-    usuario: '',
     senha: '',
     confirmaSenha: '',
   });
+
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -28,36 +28,57 @@ function Register({ setUsuario }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!form.nome.trim()) {
+      setError('Nome completo é obrigatório.');
+      return;
+    }
+
+    if (!form.usuario.trim()) {
+      setError('Nome de usuário é obrigatório.');
+      return;
+    }
+
     if (form.senha !== form.confirmaSenha) {
       setError('As senhas não coincidem.');
       return;
     }
+
+    const telefoneNumeros = form.telefone.replace(/\D/g, '');
+
+    if (telefoneNumeros.length < 10) {
+      setError('Telefone inválido. Digite pelo menos 10 dígitos.');
+      return;
+    }
+
+    const payload = {
+      nome: form.nome,
+      usuario: form.usuario,
+      email: form.email,
+      senha: form.senha,
+      telefone: telefoneNumeros,
+      genero: form.genero,
+      data_nascimento: form.data_nascimento,
+    };
+
     try {
-      const payload = {
-        nome: form.nome,
-        genero: form.genero,
-        data_nascimento: form.data_nascimento.split('/').reverse().join('-'),
-        email: form.email,
-        telefone: form.telefone.replace(/\D/g, ''),
-        usuario: form.usuario,
-        senha: form.senha,
-      };
       const response = await axios.post(
-        'http://localhost:3001/api/usuarios',
+        'http://localhost:3001/api/auth/register',
         payload,
+        { headers: { 'Content-Type': 'application/json' } },
       );
+
       setUsuario(response.data);
       localStorage.setItem('usuario', JSON.stringify(response.data));
       navigate('/profile');
     } catch (err) {
-      setError(err.response?.data?.error || 'Erro ao cadastrar.');
+      setError(err.response?.data?.message || 'Erro ao cadastrar.');
     }
   };
 
   return (
     <div className="register-bg">
       <div className="register-main">
-        {/* Lado esquerdo */}
         <div className="register-left">
           <div className="register-logo">CineFriends</div>
           <div className="register-slogan">
@@ -67,7 +88,6 @@ function Register({ setUsuario }) {
             <img src={cinemaImg} alt="Cinema" />
           </div>
         </div>
-        {/* Lado direito */}
         <form className="register-card" onSubmit={handleSubmit}>
           <div className="register-title">Cadastro</div>
           <div className="register-fields">
@@ -76,12 +96,13 @@ function Register({ setUsuario }) {
               <input
                 type="text"
                 name="nome"
-                placeholder="Digite seu nome..."
+                placeholder="Digite seu nome completo..."
                 value={form.nome}
                 onChange={handleChange}
                 required
               />
             </label>
+
             <label>
               Gênero:
               <select
@@ -91,9 +112,11 @@ function Register({ setUsuario }) {
                 required
               >
                 <option value="">Selecione seu gênero...</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Feminino">Feminino</option>
-                <option value="Não Binário">Não Binário</option>
+                {genero.map((g) => (
+                  <option key={g} value={g}>
+                    {g}
+                  </option>
+                ))}
               </select>
             </label>
             <label>
@@ -101,7 +124,9 @@ function Register({ setUsuario }) {
               <input
                 type="date"
                 className="date"
-                placeholder="dd/mm/aaaa"
+                name="data_nascimento"
+                value={form.data_nascimento}
+                onChange={handleChange}
                 required
               />
             </label>
@@ -129,11 +154,11 @@ function Register({ setUsuario }) {
               />
             </label>
             <label>
-              Usuário:
+              Nome de usuário:
               <input
                 type="text"
                 name="usuario"
-                placeholder="Digite o usuário..."
+                placeholder="Digite seu nome de usuário..."
                 value={form.usuario}
                 onChange={handleChange}
                 required

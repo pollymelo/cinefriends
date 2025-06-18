@@ -1,222 +1,173 @@
-const express = require('express');
-const cors = require('cors');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { PrismaClient } = require('@prisma/client');
-require('dotenv').config(); // <-- Importa e carrega as variáveis de ambiente do .env
+import express from 'express';
+import mysql from 'mysql2/promise';
+import bcrypt from 'bcryptjs';
+import cors from 'cors';
 
-// 1. Inicializa o PrismaClient
-const prisma = new PrismaClient();
-
-// 2. Inicializa o Express
 const app = express();
+const PORT = 3001;
 
-// 3. Define a porta do servidor
-const PORT = process.env.PORT || 3001; // Usando a porta 3001 para o backend como padrão
-
-// --- Middleware ---
-// Configuração do CORS para permitir requisições do seu frontend
+// Middleware
 app.use(
   cors({
-    origin: 'http://localhost:5173/', // <- ESTE DEVE SER O SEU ENDEREÇO DO FRONTEND
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: 'http://localhost:5173',
+    credentials: true,
   }),
 );
-
-// Middleware para parsear o corpo das requisições JSON
 app.use(express.json());
 
-// --- Authentication middleware ---
-const authenticateToken = async (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+// Conexão com MySQL
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: 'root',
+  password: '', //
+  database: 'cinefriends',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
 
-  if (!token) {
-    return res.status(401).json({ message: 'Token não fornecido' });
-  }
-
-  try {
-    // process.env.JWT_SECRET deve estar definido no seu arquivo .env do backend
-    const user = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = user; // Adiciona os dados do usuário decodificados ao objeto de requisição
-    next();
-  } catch (err) {
-    console.error('Erro na verificação do token:', err.message); // Log mais detalhado
-    return res.status(403).json({ message: 'Token inválido ou expirado' });
-  }
-};
-
-// --- Routes ---
-
-// Rota de Registro de Usuário
+// Registro
 app.post('/api/auth/register', async (req, res) => {
   try {
-    // Extrai todos os campos necessários do corpo da requisição
-    const { username, email, password, telefone, genero, datanascimento } =
+    console.log('Body recebido:', req.body);
+
+    const { nome, genero, data_nascimento, email, telefone, usuario, senha } =
       req.body;
 
-    // Validação básica de entrada (pode ser expandida com bibliotecas como Joi ou Yup)
     if (
-      !username ||
+      !nome ||
+      !data_nascimento ||
       !email ||
-      !password ||
       !telefone ||
-      !genero ||
-      !datanascimento
+      !usuario ||
+      !senha
     ) {
-      return res
-        .status(400)
-        .json({ message: 'Todos os campos são obrigatórios.' });
+      return res.status(400).json({ message: 'Campos obrigatórios faltando' });
     }
 
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [{ email }, { username }],
-      },
-    });
-
-    if (existingUser) {
-      return res.status(400).json({ message: 'Usuário ou email já existe.' });
+    // Verificar se email já existe
+    const [emailRows] = await pool.query(
+      'SELECT id FROM usuario WHERE email = ?',
+      [email],
+    );
+    if (emailRows.length > 0) {
+      return res.status(400).json({ message: 'Email já cadastrado' });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await prisma.user.create({
-      data: {
-        username,
-        email,
-        password: hashedPassword,
-        telefone,
-        genero, //
-        datanascimento: new Date(datanascimento),
-      },
-    });
-
-    res
-      .status(201)
-      .json({ success: true, message: 'Usuário criado com sucesso!' });
-  } catch (error) {
-    console.error('Erro ao registrar:', error);
-    res.status(500).json({ message: 'Erro interno ao registrar usuário.' });
-  }
-});
-
-// Rota de Login de Usuário
-app.post('/api/auth/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Find user
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      return res.status(401).json({ message: 'Credenciais inválidas.' });
+    // Verificar se usuário já existe
+    const [userRows] = await pool.query(
+      'SELECT id FROM usuario WHERE usuario = ?',
+      [usuario],
+    );
+    if (userRows.length > 0) {
+      return res.status(400).json({ message: 'Nome de usuário já existe' });
     }
 
-    // Check password
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) {
-      return res.status(401).json({ message: 'Credenciais inválidas.' });
-    }
+    // Hash da senha
+    const hashedSenha = await bcrypt.hash(senha, 10);
 
-    // Generate token
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET, // <-- Acessa a variável de ambiente
-      { expiresIn: '24h' },
+    // Inserir usuário
+    const [result] = await pool.query(
+      `INSERT INTO usuario (nome, genero, data_nascimento, email, telefone, usuario, senha)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [nome, genero, data_nascimento, email, telefone, usuario, hashedSenha],
     );
 
-    res.json({
-      token,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        telefone: user.telefone, // Inclua outros campos se quiser enviar para o frontend
-        genero: user.genero,
-        datanascimento: user.datanascimento,
-      },
+    res.status(201).json({
+      id: result.insertId,
+      nome,
+      genero,
+      data_nascimento,
+      email,
+      telefone,
+      usuario,
     });
-  } catch (error) {
-    console.error('Erro ao fazer login:', error);
-    res.status(500).json({ message: 'Erro interno ao fazer login.' });
+  } catch (err) {
+    console.error('Erro no registro:', err);
+    // Envia a mensagem de erro para facilitar o debug no frontend
+    res
+      .status(500)
+      .json({ message: 'Erro interno do servidor', error: err.message });
   }
 });
 
-// Rota Protegida de Perfil do Usuário
-app.get('/api/users/profile', authenticateToken, async (req, res) => {
+// Login
+app.post('/api/auth/login', async (req, res) => {
   try {
-    // req.user é definido pelo middleware authenticateToken
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.userId },
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        telefone: true,
-        genero: true,
-        datanascimento: true,
-        createdAt: true, // Data de criação do registro
-        updatedAt: true, // Data da última atualização
-      },
-    });
+    const { usuario, senha } = req.body;
 
-    if (!user) {
-      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    if (!usuario || !senha) {
+      return res
+        .status(400)
+        .json({ message: 'Usuário e senha são obrigatórios' });
     }
 
-    res.json(user);
-  } catch (error) {
-    console.error('Erro ao buscar perfil:', error);
+    const [rows] = await pool.query('SELECT * FROM usuario WHERE usuario = ?', [
+      usuario,
+    ]);
+
+    if (rows.length === 0) {
+      return res.status(401).json({ message: 'Usuário ou senha inválidos' });
+    }
+
+    const user = rows[0];
+
+    const senhaValida = await bcrypt.compare(senha, user.senha);
+
+    if (!senhaValida) {
+      return res.status(401).json({ message: 'Usuário ou senha inválidos' });
+    }
+
+    // Retornar dados do usuário (sem senha)
+    const { senha: _, ...userSemSenha } = user;
+
+    res.json(userSemSenha);
+  } catch (err) {
+    console.error('Erro no login:', err);
     res
       .status(500)
-      .json({ message: 'Erro interno ao buscar perfil do usuário.' });
+      .json({ message: 'Erro interno do servidor', error: err.message });
   }
 });
 
-// Rota para Atualizar Perfil do Usuário (Exemplo)
-app.put('/api/users/update', authenticateToken, async (req, res) => {
+// Atualizar telefone
+app.put('/api/auth/update-phone', async (req, res) => {
   try {
-    const { username, email, telefone, genero, datanascimento } = req.body;
-    const userId = req.user.userId; // ID do usuário do token
+    const { usuario, telefone } = req.body;
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: {
-        username: username || undefined, // Atualiza se fornecido, senão mantém o antigo
-        email: email || undefined,
-        telefone: telefone || undefined,
-        genero: genero || undefined,
-        datanascimento: datanascimento ? new Date(datanascimento) : undefined,
-      },
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        telefone: true,
-        genero: true,
-        datanascimento: true,
-      },
-    });
+    if (!usuario || !telefone) {
+      return res
+        .status(400)
+        .json({ message: 'Usuário e telefone são obrigatórios' });
+    }
 
-    res.json({
-      success: true,
-      message: 'Perfil atualizado com sucesso!',
-      user: updatedUser,
-    });
-  } catch (error) {
-    console.error('Erro ao atualizar perfil:', error);
+    // Atualiza telefone do usuário
+    const [result] = await pool.query(
+      'UPDATE usuario SET telefone = ? WHERE usuario = ?',
+      [telefone, usuario],
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    res.json({ message: 'Telefone atualizado com sucesso' });
+  } catch (err) {
+    console.error('Erro ao atualizar telefone:', err);
     res
       .status(500)
-      .json({ message: 'Erro interno ao atualizar perfil do usuário.' });
+      .json({ message: 'Erro interno do servidor', error: err.message });
   }
 });
+// Middleware de erro (último)
+app.use((err, req, res, next) => {
+  console.error('Erro capturado:', err.stack);
+  res
+    .status(500)
+    .json({ message: 'Erro interno do servidor', error: err.message });
+});
 
-// --- Start server ---
+// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
